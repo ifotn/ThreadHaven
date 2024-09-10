@@ -1,5 +1,16 @@
-﻿@{
+﻿@model IEnumerable<Product>
+
+@{
     ViewData["Title"] = ViewData["Category"];
 }
 
 <h1>Shop for @ViewData["Category"]</h1>
+
+<ul>
+    @foreach (var product in Model)
+    {
+        <li>
+            @product.Name
+        </li>
+    }
+</ul>

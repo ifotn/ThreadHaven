@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using ThreadHaven.Models;
 
 namespace ThreadHaven.Controllers
 {
@@ -35,7 +36,16 @@ namespace ThreadHaven.Controllers
                 return RedirectToAction("Index");
             }
 
-            return View();
+            // use Product model to make an in-memory list of fake products 
+            var products = new List<Product>();
+
+            for (int i = 1; i <=10; i++)
+            {
+                products.Add(new Product { ProductId = i, Name = "Product " + i, Description = "Description of Product " + i, Price = 10.00M });
+            }
+
+            // now pass the product list to the view for display
+            return View(products);
         }
     }
 }
