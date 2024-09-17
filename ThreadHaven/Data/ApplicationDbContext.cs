@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using ThreadHaven.Models;
 
 namespace ThreadHaven.Data
 {
@@ -9,5 +10,6 @@ namespace ThreadHaven.Data
             : base(options)
         {
         }
+        public DbSet<ThreadHaven.Models.Product> Product { get; set; } = default!;
     }
 }
