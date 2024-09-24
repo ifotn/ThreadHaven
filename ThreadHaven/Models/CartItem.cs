@@ -20,5 +20,8 @@ namespace ThreadHaven.Models
 
         [Required]
         public string Size { get; set; }
+
+        // parent ref
+        public Product Product { get; set; }
     }
 }

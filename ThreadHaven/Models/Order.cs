@@ -49,5 +49,8 @@ namespace ThreadHaven.Models
         [MaxLength(100)]
         public string CustomerId { get; set; }
 
+        // child ref to OrderDetail model
+        public List<OrderDetail> OrderDetails { get; set; }
+
     }
 }

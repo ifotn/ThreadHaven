@@ -20,5 +20,9 @@ namespace ThreadHaven.Models
 
         [Required]
         public string Size { get; set; }
+
+        // parent ref to Order & Product models
+        public Order Order { get; set; }
+        public Product Product { get; set; }
     }
 }

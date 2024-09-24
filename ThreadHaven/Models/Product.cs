@@ -12,5 +12,9 @@
 
         // Parent reference to Category model
         public Category Category { get; set; }
+
+        // child refs to CartItem & OrderDetail models
+        public List<CartItem> CartItems { get; set; }
+        public List<OrderDetail> OrderDetails { get; set; }
     }
 }
