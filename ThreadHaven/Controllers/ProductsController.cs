@@ -99,7 +99,7 @@ namespace ThreadHaven.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("ProductId,Name,Description,Price,Size,Photo,CategoryId")] Product product)
+        public async Task<IActionResult> Edit(int id, [Bind("ProductId,Name,Description,Price,Size,CategoryId")] Product product, IFormFile? Photo, String? CurrentPhoto)
         {
             if (id != product.ProductId)
             {
@@ -110,6 +110,18 @@ namespace ThreadHaven.Controllers
             {
                 try
                 {
+                    // upload photo if any
+                    if (Photo != null)
+                    {
+                        var fileName = UploadPhoto(Photo);
+                        product.Photo = fileName;
+                    }
+                    else
+                    {
+                        // keep existing photo if any
+                        product.Photo = CurrentPhoto;
+                    }
+
                     _context.Update(product);
                     await _context.SaveChangesAsync();
                 }
