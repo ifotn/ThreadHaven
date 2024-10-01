@@ -22,6 +22,6 @@ namespace ThreadHaven.Models
         public string Size { get; set; }
 
         // parent ref
-        public Product Product { get; set; }
+        public Product? Product { get; set; }
     }
 }

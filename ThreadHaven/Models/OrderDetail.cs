@@ -22,7 +22,7 @@ namespace ThreadHaven.Models
         public string Size { get; set; }
 
         // parent ref to Order & Product models
-        public Order Order { get; set; }
-        public Product Product { get; set; }
+        public Order? Order { get; set; }
+        public Product? Product { get; set; }
     }
 }

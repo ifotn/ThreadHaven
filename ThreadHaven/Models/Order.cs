@@ -50,7 +50,7 @@ namespace ThreadHaven.Models
         public string CustomerId { get; set; }
 
         // child ref to OrderDetail model
-        public List<OrderDetail> OrderDetails { get; set; }
+        public List<OrderDetail>? OrderDetails { get; set; }
 
     }
 }
