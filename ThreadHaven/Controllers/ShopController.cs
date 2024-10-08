@@ -1,15 +1,27 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using ThreadHaven.Data;
 using ThreadHaven.Models;
 
 namespace ThreadHaven.Controllers
 {
     public class ShopController : Controller
     {
-        public IActionResult Index()
+        // global db connection for all methods in controller
+        private readonly ApplicationDbContext _context;
+
+        // constructor to get db connection
+        public ShopController(ApplicationDbContext context)
         {
-            return View();
+            _context = context;
         }
 
+        public IActionResult Index()
+        {
+            // get categories from db & pass to view for display
+            var categories = _context.Categories.ToList();
+
+            return View(categories);
+        }
 
         // GET: Shop/ByCategory/123
         public IActionResult ByCategory(int id)
