@@ -11,8 +11,10 @@ using ThreadHaven.Models;
 
 namespace ThreadHaven.Controllers
 {
-    // make entire controller private to authenticated users only
-    [Authorize]
+    // make entire controller private to authenticated users only (level 1 security)
+    //[Authorize]
+    // make entire controller available to Administrator role only (level 2 security)
+    [Authorize(Roles = "Administrator")]
     public class CategoriesController : Controller
     {
         private readonly ApplicationDbContext _context;
