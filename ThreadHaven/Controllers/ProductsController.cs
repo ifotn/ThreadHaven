@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +11,7 @@ using ThreadHaven.Models;
 
 namespace ThreadHaven.Controllers
 {
+    [Authorize]
     public class ProductsController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -28,6 +30,7 @@ namespace ThreadHaven.Controllers
         }
 
         // GET: Products/Details/5
+        [AllowAnonymous]  // override class authorization for this method only -> make public to all
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
