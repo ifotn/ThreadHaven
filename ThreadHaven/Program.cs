@@ -15,6 +15,18 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.Requ
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddControllersWithViews();
 
+// enable Google auth before app starts
+// create var to read keys from appsettings.json
+var configuration = builder.Configuration;
+
+builder.Services.AddAuthentication()
+    .AddGoogle(options =>
+    {
+        options.ClientId = configuration["Authentication:Google:ClientID"];
+        options.ClientSecret = configuration["Authentication:Google:ClientSecret"];
+    });
+
+// app starts here
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
