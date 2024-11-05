@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using ThreadHaven.Data;
 using ThreadHaven.Models;
 
@@ -83,6 +84,17 @@ namespace ThreadHaven.Controllers
 
             // send back the cart identifier unique to this particular browser session
             return HttpContext.Session.GetString("CustomerId");
+        }
+
+        // GET: /Shop/Cart
+        public IActionResult Cart()
+        {
+            // fetch items in user's cart & include parent reference to Product
+            var cartItems = _context.CartItems
+                .Include(c => c.Product)
+                .Where(c => c.CustomerId == GetCustomerId()).ToList();
+
+            return View(cartItems);
         }
     }
 }
