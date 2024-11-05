@@ -56,17 +56,31 @@ namespace ThreadHaven.Controllers
             // identify user
             var customerId = GetCustomerId();
 
-            // create & save new CartItem
-            var cartItem = new CartItem
-            {
-                Quantity = Quantity,
-                Size = Size,
-                ProductId = ProductId,
-                Price = price,
-                CustomerId = customerId
-            };
+            // check if this user already has this item in this size in their cart
+            // if they do => update quantity, if they don't => add new item
+            var cartItem = _context.CartItems
+                .SingleOrDefault(c => c.ProductId == ProductId && c.CustomerId == customerId && c.Size == Size);
 
-            _context.CartItems.Add(cartItem);
+            if (cartItem == null)
+            {
+                // create & save new CartItem
+                cartItem = new CartItem
+                {
+                    Quantity = Quantity,
+                    Size = Size,
+                    ProductId = ProductId,
+                    Price = price,
+                    CustomerId = customerId
+                };
+
+                _context.CartItems.Add(cartItem);
+            }
+            else
+            {
+                cartItem.Quantity = cartItem.Quantity + Quantity;
+                _context.CartItems.Update(cartItem);
+            }
+                
             _context.SaveChanges();
 
             // redirect to Cart
@@ -94,7 +108,26 @@ namespace ThreadHaven.Controllers
                 .Include(c => c.Product)
                 .Where(c => c.CustomerId == GetCustomerId()).ToList();
 
+            // calculate total # of items in cart
+            int itemCount = (from c in cartItems
+                             select c.Quantity).Sum();
+
+            // store item count in session var for display in navbar
+            HttpContext.Session.SetInt32("ItemCount", itemCount);
+
             return View(cartItems);
+        }
+
+        // GET: /Shop/RemoveFromCart/5
+        public IActionResult RemoveFromCart(int id)
+        {
+            // find & remove selected cart item
+            var cartItem = _context.CartItems.SingleOrDefault(c => c.CartItemId == id);
+            _context.CartItems.Remove(cartItem);
+            _context.SaveChanges();
+
+            // show updated cart
+            return RedirectToAction("Cart");
         }
     }
 }

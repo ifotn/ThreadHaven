@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "Cart";
+    decimal total = 0;
 }
 
 <h1>Cart</h1>
@@ -27,7 +28,8 @@
     </thead>
     <tbody>
 @foreach (var item in Model) {
-        <tr>
+            total += item.Price * item.Quantity;
+            <tr>
             <td>
                 @Html.DisplayFor(modelItem => item.Product.Name)
                 <div>
@@ -47,13 +49,14 @@
                 @Html.DisplayFor(modelItem => item.Size)
             </td>
             <td>
-                <a asp-action="Delete" asp-route-id="@item.CartItemId">Delete</a>
+                <a asp-action="RemoveFromCart" asp-route-id="@item.CartItemId">Remove</a>
             </td>
         </tr>
 }
     </tbody>
 </table>
-<div class="offset-5">
+<div class="offset-3">
+    <h3>Cart Total: @String.Format("{0:c}", total)</h3>
     <a asp-action="Index" class="btn btn-primary">
         Continue Shopping
     </a>
