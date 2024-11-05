@@ -26,6 +26,9 @@ builder.Services.AddAuthentication()
         options.ClientSecret = configuration["Authentication:Google:ClientSecret"];
     });
 
+// enable support for Session vars
+builder.Services.AddSession();
+
 // app starts here
 var app = builder.Build();
 
@@ -52,5 +55,8 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 app.MapRazorPages();
+
+// session support
+app.UseSession();
 
 app.Run();

@@ -43,18 +43,46 @@ namespace ThreadHaven.Controllers
             return View(products);
         }
 
-        //// POST: /Shop/AddToCart
-        //[HttpPost]
-        //public IActionResult AddToCart(int Quantity, string Size, int ProductId)
-        //{
-        //    // find price of selected product
-        //    var product = _context.Products.FirstOrDefault(p => p.ProductId == ProductId);
-        //    var price = product.Price;
+        // POST: /Shop/AddToCart
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult AddToCart(int Quantity, string Size, int ProductId)
+        {
+            // find price of selected product
+            var product = _context.Products.FirstOrDefault(p => p.ProductId == ProductId);
+            var price = product.Price;
 
-        //    // identify user
-        //    var customerId = "SomeCustomer";
+            // identify user
+            var customerId = GetCustomerId();
 
+            // create & save new CartItem
+            var cartItem = new CartItem
+            {
+                Quantity = Quantity,
+                Size = Size,
+                ProductId = ProductId,
+                Price = price,
+                CustomerId = customerId
+            };
 
-        //}
+            _context.CartItems.Add(cartItem);
+            _context.SaveChanges();
+
+            // redirect to Cart
+            return RedirectToAction("Cart");
+        }
+
+        private string GetCustomerId()
+        {
+            // do we already have a Session variable identifier for this user's cart?
+            if (HttpContext.Session.GetString("CustomerId") == null)
+            {
+                // we don't have a Session var identifier yet; we have to make one
+                HttpContext.Session.SetString("CustomerId", Guid.NewGuid().ToString());
+            }
+
+            // send back the cart identifier unique to this particular browser session
+            return HttpContext.Session.GetString("CustomerId");
+        }
     }
 }
