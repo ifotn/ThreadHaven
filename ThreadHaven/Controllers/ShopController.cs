@@ -26,38 +26,35 @@ namespace ThreadHaven.Controllers
         // GET: Shop/ByCategory/123
         public IActionResult ByCategory(int id)
         {
-            if (id == 1)
+            // ensure we have a category id
+            if (id == null)
             {
-                ViewData["Category"] = "Sweaters";
-            }
-            else if (id == 2)
-            {
-                ViewData["Category"] = "Hoodies";
-            }
-            else if (id == 3)
-            {
-                ViewData["Category"] = "Pants";
-            }
-            else if (id == 4)
-            {
-                ViewData["Category"] = "T-Shirts";
-            }
-            else
-            {
-                // we have no id so take user back to Shop Index where they can choose a category
                 return RedirectToAction("Index");
             }
 
-            // use Product model to make an in-memory list of fake products 
-            var products = new List<Product>();
+            // get products in selected category
+            var products = _context.Products.Where(p => p.CategoryId == id).ToList();
 
-            for (int i = 1; i <=10; i++)
-            {
-                products.Add(new Product { ProductId = i, Name = "Product " + i, Description = "Description of Product " + i, Price = 10.00M });
-            }
+            // get category name to show in heading and page title
+            var category = _context.Categories.FirstOrDefault(c => c.CategoryId == id);
+            ViewData["Category"] = category.Name;
 
             // now pass the product list to the view for display
             return View(products);
         }
+
+        //// POST: /Shop/AddToCart
+        //[HttpPost]
+        //public IActionResult AddToCart(int Quantity, string Size, int ProductId)
+        //{
+        //    // find price of selected product
+        //    var product = _context.Products.FirstOrDefault(p => p.ProductId == ProductId);
+        //    var price = product.Price;
+
+        //    // identify user
+        //    var customerId = "SomeCustomer";
+
+
+        //}
     }
 }

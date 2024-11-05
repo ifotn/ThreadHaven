@@ -42,3 +42,7 @@ body {
     .btn-primary:hover {
         background-color: #2196F3;
     }
+
+    fieldset {
+        margin-bottom: 10px;
+    }
