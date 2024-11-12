@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Stripe;
+using Stripe.Checkout;
 using ThreadHaven.Data;
 using ThreadHaven.Models;
 
@@ -11,10 +13,14 @@ namespace ThreadHaven.Controllers
         // global db connection for all methods in controller
         private readonly ApplicationDbContext _context;
 
+        // get access to appsettings.json to read the stripe key
+        private readonly IConfiguration _configuration;
+
         // constructor to get db connection
-        public ShopController(ApplicationDbContext context)
+        public ShopController(ApplicationDbContext context, IConfiguration configuration)
         {
             _context = context;
+            _configuration = configuration;
         }
 
         public IActionResult Index()
@@ -155,6 +161,48 @@ namespace ThreadHaven.Controllers
             HttpContext.Session.SetObject("Order", order);
 
             return RedirectToAction("Payment");
+        }
+
+        // GET: /Shop/Payment
+        [Authorize]
+        public IActionResult Payment()
+        {
+            // get the current order from the session var
+            var order = HttpContext.Session.GetObject<Order>("Order");
+            var orderTotal = order.OrderTotal;
+
+            // get stripe key from configuration
+            StripeConfiguration.ApiKey = _configuration.GetValue<string>("StripeSecretKey");
+
+            // create new Stripe payment
+            var options = new SessionCreateOptions
+            {
+                LineItems = new List<SessionLineItemOptions>
+                {
+                  new SessionLineItemOptions
+                  {
+                      PriceData = new SessionLineItemPriceDataOptions
+                      {
+                        UnitAmount = (long?)(orderTotal * 100),
+                        Currency = "cad",
+                        ProductData = new SessionLineItemPriceDataProductDataOptions
+                        {
+                            Name = "Thread Haven Purchase"
+                        }
+                      },
+                      Quantity = 1
+                  },
+                },
+                Mode = "payment",
+                SuccessUrl = "https://" + Request.Host + "/Shop/SaveOrder",
+                CancelUrl = "https://" + Request.Host + "/Shop/Cart",
+            };
+            var service = new SessionService();
+            Session session = service.Create(options);
+
+            // redirect user after payment
+            Response.Headers.Add("Location", session.Url);
+            return new StatusCodeResult(303);            
         }
     }
 }
