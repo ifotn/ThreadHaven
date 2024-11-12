@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ThreadHaven.Data;
 using ThreadHaven.Models;
@@ -128,6 +129,32 @@ namespace ThreadHaven.Controllers
 
             // show updated cart
             return RedirectToAction("Cart");
+        }
+
+        // GET: /Shop/Checkout
+        [Authorize]
+        public IActionResult Checkout()
+        {
+            return View();
+        }
+
+        // POST: /Shop/Checkout
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Checkout([Bind("FirstName,LastName,Address,City,Province,PostalCode,Phone")] Order order)
+        {
+            // auto-fill the other order properties
+            order.OrderDate = DateTime.Now;
+            order.CustomerId = User.Identity.Name;
+            order.OrderTotal = (from c in _context.CartItems
+                                where c.CustomerId == HttpContext.Session.GetString("CustomerId")
+                                select c.Quantity * c.Price).Sum();
+
+            // use SessionExtensions class to store entire order in single session var
+            // code from https://www.talkingdotnet.com/store-complex-objects-in-asp-net-core-session/
+            HttpContext.Session.SetObject("Order", order);
+
+            return RedirectToAction("Payment");
         }
     }
 }
