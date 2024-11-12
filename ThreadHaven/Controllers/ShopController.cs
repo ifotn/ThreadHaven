@@ -204,5 +204,47 @@ namespace ThreadHaven.Controllers
             Response.Headers.Add("Location", session.Url);
             return new StatusCodeResult(303);            
         }
+
+        // GET: /Shop/SaveOrder
+        [Authorize]
+        public IActionResult SaveOrder()
+        {
+            // get order from session var
+            var order = HttpContext.Session.GetObject<Order>("Order");
+
+            // save order to db
+            _context.Orders.Add(order);
+            _context.SaveChanges();
+
+            // save the cart items => order details in db attached to new Order Id
+            var cartItems = _context.CartItems.Where(c => c.CustomerId == HttpContext.Session.GetString("CustomerId"));
+
+            foreach (var item in cartItems)
+            {
+                var orderDetail = new OrderDetail
+                {
+                    ProductId = item.ProductId,
+                    Quantity = item.Quantity,
+                    Price = item.Price,
+                    Size = item.Size,
+                    OrderId = order.OrderId
+                };
+                _context.OrderDetails.Add(orderDetail);
+            }
+            _context.SaveChanges();
+
+            // clear the cart
+            foreach (var item in cartItems)
+            {
+                _context.CartItems.Remove(item);
+            }
+            _context.SaveChanges();
+
+            // clear any session vars
+            HttpContext.Session.Clear();
+
+            // show order confirmation page, passing in the new Order Id
+            return RedirectToAction("Details", "Orders", new { @id = order.OrderId });
+        }
     }
 }
