@@ -33,6 +33,7 @@ namespace ThreadHaven.Controllers
         // GET: Categories/Details/5
         public async Task<IActionResult> Details(int? id)
         {
+            // result 1 - no id => 404 Error
             if (id == null)
             {
                 return NotFound();
@@ -40,11 +41,14 @@ namespace ThreadHaven.Controllers
 
             var category = await _context.Categories
                 .FirstOrDefaultAsync(m => m.CategoryId == id);
+
+            // result 2 - id not found in db => 404 error
             if (category == null)
             {
                 return NotFound();
             }
 
+            // result 3 - id found in db => load view & display category
             return View(category);
         }
 
