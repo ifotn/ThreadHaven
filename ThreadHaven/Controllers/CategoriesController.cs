@@ -27,7 +27,7 @@ namespace ThreadHaven.Controllers
         // GET: Categories
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Categories.ToListAsync());
+            return View("Index", await _context.Categories.ToListAsync());
         }
 
         // GET: Categories/Details/5
@@ -36,7 +36,7 @@ namespace ThreadHaven.Controllers
             // result 1 - no id => 404 Error
             if (id == null)
             {
-                return NotFound();
+                return View("404"); // NotFound();
             }
 
             var category = await _context.Categories
@@ -45,11 +45,11 @@ namespace ThreadHaven.Controllers
             // result 2 - id not found in db => 404 error
             if (category == null)
             {
-                return NotFound();
+                return View("404"); // NotFound();
             }
 
             // result 3 - id found in db => load view & display category
-            return View(category);
+            return View("Details", category);
         }
 
         // GET: Categories/Create
