@@ -51,12 +51,16 @@ namespace ThreadHaven.Controllers
             if (User.IsInRole("Administrator"))
             {
                 order = await _context.Orders
+                    .Include(o => o.OrderDetails)
+                    .ThenInclude(od => od.Product)
                     .FirstOrDefaultAsync(m => m.OrderId == id);
             }
             else
             {
                 // does the current user own the requested order?
                 order = await _context.Orders
+                    .Include(o => o.OrderDetails)
+                    .ThenInclude(od => od.Product)
                     .FirstOrDefaultAsync(m => m.OrderId == id && m.CustomerId == User.Identity.Name);
             }
            
