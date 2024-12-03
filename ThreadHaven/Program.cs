@@ -29,6 +29,9 @@ builder.Services.AddAuthentication()
 // enable support for Session vars
 builder.Services.AddSession();
 
+// enable Swashbuckle for api docs
+builder.Services.AddSwaggerGen();
+
 // app starts here
 var app = builder.Build();
 
@@ -36,6 +39,10 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseMigrationsEndPoint();
+
+    // create api docs using Swashbuckle and Swagger standard
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
 else
 {
