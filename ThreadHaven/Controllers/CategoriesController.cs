@@ -55,7 +55,7 @@ namespace ThreadHaven.Controllers
         // GET: Categories/Create
         public IActionResult Create()
         {
-            return View();
+            return View("Create");
         }
 
         // POST: Categories/Create
@@ -71,7 +71,7 @@ namespace ThreadHaven.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(category);
+            return View("Create", category);
         }
 
         // GET: Categories/Edit/5
@@ -79,15 +79,15 @@ namespace ThreadHaven.Controllers
         {
             if (id == null)
             {
-                return NotFound();
+                return View("404");
             }
 
             var category = await _context.Categories.FindAsync(id);
             if (category == null)
             {
-                return NotFound();
+                return View("404");
             }
-            return View(category);
+            return View("Edit", category);
         }
 
         // POST: Categories/Edit/5
@@ -130,33 +130,44 @@ namespace ThreadHaven.Controllers
         {
             if (id == null)
             {
-                return NotFound();
+                return View("404"); // NotFound();
             }
 
             var category = await _context.Categories
                 .FirstOrDefaultAsync(m => m.CategoryId == id);
             if (category == null)
             {
-                return NotFound();
+                return View("404"); // NotFound();
             }
 
-            return View(category);
+            return View("Delete", category);
         }
 
         // POST: Categories/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(int? id)
         {
+
+            if (id == null)
+            {
+                return View("404"); // NotFound();
+            }
+
             var category = await _context.Categories.FindAsync(id);
             if (category != null)
             {
                 _context.Categories.Remove(category);
             }
+            else
+            {
+                return View("404"); // NotFound();
+            }
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
+
 
         private bool CategoryExists(int id)
         {
